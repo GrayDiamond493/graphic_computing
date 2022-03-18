@@ -4,25 +4,25 @@ var s = 5;
 //coords
 var originX = 200;
 var originY = 300;
-var armpit_left = [];
-var armpit_right = [];
-var hip_left = [];
-var hip_right = [];
-var neck_right = [];
-var neck_left = [];
-var shoulder_right = [];
-var shoulder_left = [];
-var end_right = [];
-var end_left = [];
+const armpit_left = [];
+const armpit_right = [];
+const hip_left = [];
+const hip_right = [];
+const neck_right = [];
+const neck_left = [];
+const shoulder_right = [];
+const shoulder_left = [];
+const end_right = [];
+const end_left = [];
 //sleeve coords
-var start_left_up = [];
-var end_left_up = [];
-var start_left_down = [];
-var end_left_down = [];
-var start_right_up = [];
-var end_right_up = [];
-var start_right_down = [];
-var end_right_down = [];
+const start_left_up = [];
+const end_left_up = [];
+const start_left_down = [];
+const end_left_down = [];
+const start_right_up = [];
+const end_right_up = [];
+const start_right_down = [];
+const end_right_down = [];
 
 //input
 var hip = 0;
@@ -101,6 +101,7 @@ function scale(opt) {
     draw(ctx);
 }
 
+//locates every point and assings coordinates
 function planShirt(hip, length, wide, back) {
     //Hip
     centerX = (originX + (originX + hip)) / 2;
@@ -121,8 +122,8 @@ function planShirt(hip, length, wide, back) {
 
     end_left["x"] = hip_left["x"] - 10;
     end_left["y"] = originY + 10;
-    //wide
 
+    //wide
     armpit_left["x"] = centerX - wide / 2;
     armpit_right["x"] = centerX + wide / 2;
     widePosY = originY - length * (2 / 3);
@@ -137,6 +138,7 @@ function planShirt(hip, length, wide, back) {
     shoulder_right["y"] = backPosY;
 }
 
+//locates every point and assings coordinates for sleeve lines
 function calculateSleeves() {
     //Assuming 45 degrees
     //left
@@ -198,6 +200,7 @@ function makeCurve(ctx, cp, from, to) {
     ctx.stroke();
 }
 
+//draws everything
 function draw(ctx) {
     cp = [];
     //sleeves

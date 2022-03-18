@@ -7,7 +7,7 @@ This application allows the user to store shirt measures and generate a shirt si
 All Libraries used are native to the language.
 Since this is a web application, you should only need to run it in a browser. 
 
-There are many options to run it in a local server, be it Apache web server packages sush as [Xampp](https://www.apachefriends.org/es/index.html), [WampServer]https://www.wampserver.com/en/() or others alike.
+There are many options to run it in a local server, be it Apache web server packages sush as [Xampp](https://www.apachefriends.org/es/index.html), [WampServer](https://www.wampserver.com/en/) or others alike.
 For simplicity, you can also try opening from the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) Extension from Visual Studio Code. 
 
 No further installations needed.

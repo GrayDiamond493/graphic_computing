@@ -47,7 +47,7 @@ function translateShirt(opt) {
             }
             break;
         case 1:
-            if (originX < 6400) {
+            if (originX < 480) {
                 originX = originX + s;
             }
             break;
@@ -57,7 +57,7 @@ function translateShirt(opt) {
             }
             break;
         case 3:
-            if (originX < 6400) {
+            if (originX < 640) {
                 originY = originY + s;
             }
             break;

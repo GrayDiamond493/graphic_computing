@@ -22,7 +22,8 @@ The **Rotate** section allows to rotate the shirt clockwise or counter-clockwise
 
 ## Copyright
 Author: Adrian Gutierrez
-Last Reviewd: 03/17/2022
+
+Last Reviewed: 03/17/2022
 
 All scripts presented were written by the author. Some implementations already existing in JavaScript were used.
 

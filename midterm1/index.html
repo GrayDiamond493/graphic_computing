@@ -83,14 +83,14 @@
           <div class="col">
             <h2>Escalate</h2>
             <button
-              onclick="scale(0)"
+              onclick="escalateShirt(1)"
               type="button"
               class="btn btn-labeled btn-danger"
             >
               <span class="btn-label"><i class="fa fa-search-plus"></i></span>
             </button>
             <button
-              onclick="scale(1)"
+              onclick="escalateShirt(-1)"
               type="button"
               class="btn btn-labeled btn-danger"
             >
@@ -100,14 +100,14 @@
           <div class="col">
             <h2>Rotate</h2>
             <button
-              onclick="rotateImg(-5)"
+              onclick="rotateShirt(-5)"
               type="button"
               class="btn btn-labeled btn-info"
             >
               <span class="btn-label"><i class="fa fa-angle-double-left"></i></span>
             </button>
             <button
-              onclick="rotateImg(5)"
+              onclick="rotateShirt(5)"
               type="button"
               class="btn btn-labeled btn-info"
             >
@@ -117,7 +117,7 @@
         </div>
       </div>
     </div>
-    <canvas id="miwebgl" width="640" height="480">
+    <canvas id="miwebgl" width="1366" height="768">
       No tiene webGl en su procesador
     </canvas>
     <script type="text/javascript" src="shirt.js"></script>

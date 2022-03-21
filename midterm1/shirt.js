@@ -1,184 +1,204 @@
+const canvas = document.querySelector("#miwebgl");
+const ctx = canvas.getContext("2d");
 
 var theta = 0;
 var s = 5;
+var e = 1;
 //coords
 var originX = 200;
 var originY = 300;
-const armpit_left = [];
-const armpit_right = [];
-const hip_left = [];
-const hip_right = [];
-const neck_right = [];
-const neck_left = [];
-const shoulder_right = [];
-const shoulder_left = [];
-const end_right = [];
-const end_left = [];
-//sleeve coords
-const start_left_up = [];
-const end_left_up = [];
-const start_left_down = [];
-const end_left_down = [];
-const start_right_up = [];
-const end_right_up = [];
-const start_right_down = [];
-const end_right_down = [];
+var allX = [];
+var allY = [];
 
-//input
-var hip = 0;
-var length = 0;
-var wide = 0;
-var back = 0;
-var sleeve = back / 3;
+//to be used outside
+var hip
+var length
+var wide
+var back
+var sleeve
 
-function rotateImg(dir) {
+//exclusive use in foreach
+var point_names = ['hip_left', 'hip_right', 'neck_right', 'neck_left', 'end_right', 'end_left',
+'armpit_right', 'armpit_left', 'shoulder_right', 'shoulder_left', 'start_left_up',
+'end_left_up', 'start_left_down', 'end_left_down', 'start_right_up',
+'end_right_up', 'start_right_down', 'end_right_down', 'hole', 'neck_hole', 'left_sleeve_hole', 'right_sleeve_hole']
+
+function rotateShirt(dir) {
+    if ((theta > 0 && dir < 0) || (theta < 0 && dir > 0)) {
+        theta = 0
+    }
     theta += dir;
-    rotation = "rotate(" + theta + "deg)";
-    document.querySelector("#miwebgl").style.transform = rotation;
+    //to rad
+    theta = theta * 0.0174533
+    console.log(theta)
+
+    aux1 = allX['hip_left']
+    aux2 = allY['hip_left']
+    point_names.forEach((value, index) => {
+        allX[value] = (Math.cos(theta) * allX[value]) - (Math.sin(theta) * allY[value])
+        allY[value] = (Math.cos(theta) * allY[value]) + (Math.sin(theta) * allX[value])
+    })
+    //direction
+    if (dir < 0) {
+        mult = -1
+    } else {
+        mult = 1
+    }
+
+    //move to origin
+    xMove = Math.abs(aux1 - allX['hip_left'])
+    yMove = Math.abs(aux2 - allY['hip_left'])
+    point_names.forEach((value, index) => {
+        allX[value] = allX[value] + (mult * xMove)
+        allY[value] = allY[value] - (mult * yMove)
+    })
+    draw();
+
 }
 
 function translateShirt(opt) {
-    const canvas = document.querySelector("#miwebgl");
-    const ctx = canvas.getContext("2d");
     switch (opt) {
         case 0:
             if (originX > 0) {
+                //failsafe
                 originX = originX - s;
+                point_names.forEach((value, index) => {
+                    allX[value] = allX[value] - s
+                })
+                console.log('moved to', allX)
             }
             break;
         case 1:
-            if (originX < 480) {
+            if (originX < 1366) {
+                //failsafe
                 originX = originX + s;
+                point_names.forEach((value, index) => {
+                    allX[value] = allX[value] + s
+                })
+                console.log('moved to', allX)
             }
             break;
         case 2:
             if (originY > 0) {
+                //failsafe
                 originY = originY - s;
+                point_names.forEach((value, index) => {
+                    allY[value] = allY[value] - s
+                })
+                console.log('moved to', allY)
             }
             break;
         case 3:
-            if (originX < 640) {
+            if (originX < 780) {
+                //failsafe
                 originY = originY + s;
+                point_names.forEach((value, index) => {
+                    allY[value] = allY[value] + s
+                })
+                console.log('moved to', allY)
             }
             break;
     }
     console.log("input:", hip, length, wide, back, sleeve);
-    //Comment to appreciate comparison
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    planShirt(hip, length, wide, back);
-    calculateSleeves();
-    draw(ctx);
+    draw();
 }
 
-function scale(opt) {
-    const canvas = document.querySelector("#miwebgl");
-    const ctx = canvas.getContext("2d");
-    switch (opt) {
-        case 0:
-            if (hip < 1000) {
-                hip += s;
-                length += s;
-                wide += s;
-                back += s;
-                sleeve = back / 3;
-            }
-            break;
-        case 1:
-            if (hip > 10) {
-                hip -= s;
-                length -= s;
-                wide -= s;
-                back -= s;
-                sleeve = back / 3;
-            }
-            break;
+function escalateShirt(opt) {
+
+    if ((e > 1 && opt < 0) || (e < 1 && opt > 0)) {
+        e = 1
     }
-    console.log("input:", hip, length, wide, back, sleeve);
-    //Comment to appreciate comparison
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    planShirt(hip, length, wide, back);
-    calculateSleeves();
-    draw(ctx);
+    e = e + (0.001 * opt)
+
+    console.log('e', e)
+
+    aux1 = allX['hip_left']
+    aux2 = allY['hip_left']
+    point_names.forEach((value, index) => {
+        allX[value] = (allX[value] * e)
+        allY[value] = (allY[value] * e)
+    })
+    //move to origin
+    xMove = Math.abs(aux1 - allX['hip_left'])
+    yMove = Math.abs(aux2 - allY['hip_left'])
+    point_names.forEach((value, index) => {
+        allX[value] = allX[value] - (opt * xMove)
+        allY[value] = allY[value] - (opt * yMove)
+    })
+
+    draw();
+
 }
 
-//locates every point and assings coordinates
-function planShirt(hip, length, wide, back) {
-    //Hip
+//locates each shirt point in canvas
+function planCoordsShirt() {
+    //To center back & width according to hip
     centerX = (originX + (originX + hip)) / 2;
-    hip_left["x"] = originX;
-    hip_left["y"] = originY;
-    hip_right["x"] = originX + hip;
-    hip_right["y"] = originY;
-    //Length
-    lenPos = originX + hip * (3 / 4);
-    neck_right["x"] = lenPos;
-    neck_right["y"] = originY - length - 10;
-    neck_left["x"] = centerX - (neck_right["x"] - centerX);
-    neck_left["y"] = neck_right["y"];
+    //hip coords
+    planShirt('hip_left', originX, originY)
+    planShirt('hip_right', originX + hip, originY)
 
-    //shirt end
-    end_right["x"] = hip_right["x"] + 10;
-    end_right["y"] = originY + 10;
+    //hole cp
+    planShirt('hole', centerX, originY)
 
-    end_left["x"] = hip_left["x"] - 10;
-    end_left["y"] = originY + 10;
+    //neck coords
+    planShirt('neck_right', originX + hip * (3 / 4), originY - length - 10)
+    planShirt('neck_left', centerX - (allX['neck_right'] - centerX), allY['neck_right'])
 
-    //wide
-    armpit_left["x"] = centerX - wide / 2;
-    armpit_right["x"] = centerX + wide / 2;
-    widePosY = originY - length * (2 / 3);
-    armpit_left["y"] = widePosY;
-    armpit_right["y"] = widePosY;
+    //neck hole
+    planShirt('neck_hole', centerX, allY['neck_right'] + 10)
+
+    //main hole
+    planShirt('end_right', allX['hip_right'] + hip / 20, originY + length / 20)
+    planShirt('end_left', allX['hip_left'] - hip / 20, originY + length / 20)
+
+    //width
+    planShirt('armpit_left', centerX - wide / 2, originY - length * (2 / 3))
+    planShirt('armpit_right', centerX + wide / 2, originY - length * (2 / 3))
 
     //back
-    shoulder_left["x"] = centerX - back / 2;
-    shoulder_right["x"] = centerX + back / 2;
-    backPosY = originY - length * (19 / 20);
-    shoulder_left["y"] = backPosY;
-    shoulder_right["y"] = backPosY;
+    planShirt('shoulder_left', centerX - back / 2, originY - length * (19 / 20))
+    planShirt('shoulder_right', centerX + back / 2, originY - length * (19 / 20))
 }
 
-//locates every point and assings coordinates for sleeve lines
-function calculateSleeves() {
+//locates every point and assings coordinates to sleeves
+function planCoordsSleeves() {
     //Assuming 45 degrees
     //left
+    planShirt('start_left_up', allX['shoulder_left'], allY['shoulder_left'])
+    planShirt('end_left_up', allX['shoulder_left'] - sleeve / 2, allY['shoulder_left'] + sleeve / 2)
 
-    //up
-    ogX = shoulder_left["x"];
-    start_left_up["x"] = ogX;
-    start_left_up["y"] = shoulder_left["y"];
-
-    end_left_up["x"] = ogX - sleeve / 2;
-    end_left_up["y"] = shoulder_left["y"] + sleeve / 2;
-
-    //down
-    ogX2 = armpit_left["x"];
-    start_left_down["x"] = ogX2;
-    start_left_down["y"] = armpit_left["y"];
-
-    end_left_down["x"] = ogX2 - sleeve / 2;
-    end_left_down["y"] = armpit_left["y"] + sleeve / 2;
+    planShirt('start_left_down', allX['armpit_left'], allY['armpit_left'])
+    planShirt('end_left_down', allX['armpit_left'] - sleeve / 2, allY['armpit_left'] + sleeve / 2)
 
     //right
+    planShirt('start_right_up', allX['shoulder_right'], allY['shoulder_right'])
+    planShirt('end_right_up', allX['shoulder_right'] + sleeve / 2, allY['shoulder_left'] + sleeve / 2)
 
-    //up
-    ogX = shoulder_right["x"];
-    start_right_up["x"] = ogX;
-    start_right_up["y"] = shoulder_right["y"];
+    planShirt('start_right_down', allX['armpit_right'], allY['armpit_right'])
+    planShirt('end_right_down', allX['armpit_right'] + sleeve / 2, allY['armpit_right'] + sleeve / 2)
 
-    end_right_up["x"] = ogX + sleeve / 2;
-    end_right_up["y"] = shoulder_left["y"] + sleeve / 2;
-
-    //down
-    ogX2 = armpit_right["x"];
-    start_right_down["x"] = ogX2;
-    start_right_down["y"] = armpit_right["y"];
-
-    end_right_down["x"] = ogX2 + sleeve / 2;
-    end_right_down["y"] = armpit_right["y"] + sleeve / 2;
+    //holes
+    planShirt('left_sleeve_hole', allX['end_left_up'] - 5, (allY['end_left_down'] + allY['end_left_up']) / 2)
+    planShirt('right_sleeve_hole', allX['end_right_up'] + 5, (allY['end_right_down'] + allY['end_right_up']) / 2)
 }
 
-function makeLine(ctx, from, to) {
+//locates every point and assings coordinates globally
+function planShirt(index, x, y) {
+    allX[index] = x;
+    allY[index] = y;
+    console.log('index: ', index, 'succesfully located at (', x, ',', y, ')')
+}
+
+function makeLine(ctx, i1, i2) {
+    from = []
+    to = []
+    from['x'] = allX[i1]
+    from['y'] = allY[i1]
+
+    to['x'] = allX[i2]
+    to['y'] = allY[i2]
+
     console.log("drawing");
     ctx.beginPath();
     ctx.moveTo(from["x"], from["y"]);
@@ -186,7 +206,15 @@ function makeLine(ctx, from, to) {
     ctx.stroke();
 }
 
-function makeCurve(ctx, cp, from, to) {
+function makeCurve(ctx, cp, i1, i2) {
+    from = []
+    to = []
+    from['x'] = allX[i1]
+    from['y'] = allY[i1]
+
+    to['x'] = allX[i2]
+    to['y'] = allY[i2]
+
     ctx.beginPath();
     ctx.moveTo(from["x"], from["y"]);
     ctx.bezierCurveTo(
@@ -201,71 +229,78 @@ function makeCurve(ctx, cp, from, to) {
 }
 
 //draws everything
-function draw(ctx) {
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     cp = [];
     //sleeves
-    makeLine(ctx, start_left_up, end_left_up);
-    makeLine(ctx, start_right_up, end_right_up);
-    makeLine(ctx, start_left_down, end_left_down);
-    makeLine(ctx, start_right_down, end_right_down);
-    cp["x1"] = end_left_down["x"] - 3;
-    cp["y1"] = (end_left_down["y"] + end_left_up["y"]) / 2;
-    cp["x2"] = end_left_down["x"] - 3;
-    cp["y2"] = (end_left_down["y"] + end_left_up["y"]) / 2;
-    console.log(cp);
-    makeCurve(ctx, cp, end_left_down, end_left_up);
+    makeLine(ctx, 'start_left_down', 'end_left_down');
+    makeLine(ctx, 'start_right_down', 'end_right_down');
 
-    cp["x1"] = end_right_down["x"] + 3;
-    cp["y1"] = (end_right_down["y"] + end_right_up["y"]) / 2;
-    cp["x2"] = end_right_down["x"] + 3;
-    cp["y2"] = (end_right_down["y"] + end_right_up["y"]) / 2;
-    makeCurve(ctx, cp, end_right_down, end_right_up);
+    cp["x1"] = allX['shoulder_left']
+    cp["y1"] = allY['shoulder_left']
+    cp["x2"] = allX['shoulder_left']
+    cp["y2"] = allY['shoulder_left']
+    makeCurve(ctx, cp, 'end_left_up', 'neck_left');
 
-    //shoulder
-    makeLine(ctx, shoulder_left, neck_left);
-    makeLine(ctx, shoulder_right, neck_right);
+    cp["x1"] = allX['shoulder_right']
+    cp["y1"] = allY['shoulder_right']
+    cp["x2"] = allX['shoulder_right']
+    cp["y2"] = allY['shoulder_right']
+    makeCurve(ctx, cp, 'end_right_up', 'neck_right');
+
+    //sleeve holes
+    cp["x1"] = allX['left_sleeve_hole']
+    cp["y1"] = allY['left_sleeve_hole']
+    cp["x2"] = allX['left_sleeve_hole']
+    cp["y2"] = allY['left_sleeve_hole']
+    makeCurve(ctx, cp, 'end_left_down', 'end_left_up');
+
+    cp["x1"] = allX['right_sleeve_hole']
+    cp["y1"] = allY['right_sleeve_hole']
+    cp["x2"] = allX['right_sleeve_hole']
+    cp["y2"] = allY['right_sleeve_hole']
+    makeCurve(ctx, cp, 'end_right_down', 'end_right_up');
 
     //neck
-    cp["x1"] = centerX;
-    cp["y1"] = originY - length;
-    cp["x2"] = centerX;
-    cp["y2"] = originY - length;
-    makeCurve(ctx, cp, neck_left, neck_right);
+    cp["x1"] = allX['neck_hole']
+    cp["y1"] = allY['neck_hole']
+    cp["x2"] = allX['neck_hole']
+    cp["y2"] = allY['neck_hole']
+    makeCurve(ctx, cp, 'neck_left', 'neck_right');
 
     //sides
-    cp["x1"] = hip_left["x"];
-    cp["y1"] = hip_left["y"];
-    cp["x2"] = armpit_left["x"];
-    cp["y2"] = armpit_left["y"];
-    makeCurve(ctx, cp, end_left, armpit_left);
+    cp["x1"] = allX['hip_left'];
+    cp["y1"] = allY['hip_left'];
+    cp["x2"] = allX['armpit_left'];
+    cp["y2"] = allY['armpit_left'];
+    makeCurve(ctx, cp, 'end_left', 'armpit_left');
 
-    cp["x1"] = hip_right["x"];
-    cp["y1"] = hip_right["y"];
-    cp["x2"] = armpit_right["x"];
-    cp["y2"] = armpit_right["y"];
-    makeCurve(ctx, cp, end_right, armpit_right);
+    cp["x1"] = allX['hip_right'];
+    cp["y1"] = allY['hip_right'];
+    cp["x2"] = allX['armpit_right'];
+    cp["y2"] = allY['armpit_right'];
+    makeCurve(ctx, cp, 'end_right', 'armpit_right');
 
-    //hole
-    cp["x1"] = centerX - 10;
-    cp["y1"] = hip_right["y"];
-    cp["x2"] = centerX + 10;
-    cp["y2"] = hip_right["y"];
-    makeCurve(ctx, cp, end_right, end_left);
+    //main hole
+    cp["x1"] = allX['hole']
+    cp["y1"] = allY['hole']
+    cp["x2"] = allX['hole']
+    cp["y2"] = allY['hole']
+    makeCurve(ctx, cp, 'end_right', 'end_left');
+
 }
 
 function program() {
     console.log("running");
-    const canvas = document.querySelector("#miwebgl");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    hip = parseInt(document.getElementById("hip").value);
-    length = parseInt(document.getElementById("len").value);
-    wide = parseInt(document.getElementById("wide").value);
-    back = parseInt(document.getElementById("back").value);
+    hip = parseFloat(document.getElementById("hip").value);
+    length = parseFloat(document.getElementById("len").value);
+    wide = parseFloat(document.getElementById("wide").value);
+    back = parseFloat(document.getElementById("back").value);
     sleeve = back / 3;
+
     console.log("input:", hip, length, wide, back, sleeve);
-    planShirt(hip, length, wide, back);
-    calculateSleeves();
-    draw(ctx);
+    planCoordsShirt();
+    planCoordsSleeves();
+    draw();
 }

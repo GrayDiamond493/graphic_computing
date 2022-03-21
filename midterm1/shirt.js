@@ -32,6 +32,7 @@ function rotateShirt(dir) {
     theta = theta * 0.0174533
     console.log(theta)
 
+    //left hip will be rotation axis
     aux1 = allX['hip_left']
     aux2 = allY['hip_left']
     point_names.forEach((value, index) => {
@@ -99,7 +100,6 @@ function translateShirt(opt) {
             }
             break;
     }
-    console.log("input:", hip, length, wide, back, sleeve);
     draw();
 }
 

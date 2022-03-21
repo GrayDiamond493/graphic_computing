@@ -5,8 +5,8 @@ var theta = 0;
 var s = 5;
 var e = 1;
 //coords
-var originX = 200;
-var originY = 300;
+const originX = 200;
+const originY = 300;
 var allX = [];
 var allY = [];
 
@@ -17,8 +17,8 @@ var wide
 var back
 var sleeve
 
-//exclusive use in foreach
-var point_names = ['hip_left', 'hip_right', 'neck_right', 'neck_left', 'end_right', 'end_left',
+//indexes for points to be used in foreach
+const point_names = ['hip_left', 'hip_right', 'neck_right', 'neck_left', 'end_right', 'end_left',
 'armpit_right', 'armpit_left', 'shoulder_right', 'shoulder_left', 'start_left_up',
 'end_left_up', 'start_left_down', 'end_left_down', 'start_right_up',
 'end_right_up', 'start_right_down', 'end_right_down', 'hole', 'neck_hole', 'left_sleeve_hole', 'right_sleeve_hole']

@@ -5,8 +5,8 @@ var theta = 0;
 var s = 5;
 var e = 1;
 //coords
-const originX = 200;
-const originY = 300;
+var originX = 200;
+var originY = 300;
 var allX = [];
 var allY = [];
 
